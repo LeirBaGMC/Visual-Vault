@@ -1,0 +1,274 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO Y VARIABLES GLOBALES
+   ========================================================================== */
+:root {
+    --color-primary: #004B87;          /* Azul Técnico (Technical Blue)  */
+    --color-primary-hover: #003366;
+    --color-secondary: #5B6770;        /* Gris Técnico de Contraste  */
+    --color-secondary-hover: #454F56;
+    --color-danger: #D9381E;           /* Rojo de Alerta y Cerrar Sesión  */
+    --color-danger-hover: #B82512;
+    --color-warning: #E5A93C;          /* Ámbar de Moderación y Contenido Sensible  */
+    
+    --color-background-app: #F8F9FA;   /* Gris claro estilo Pinterest  */
+    --color-background-card: #FFFFFF;
+    --color-border: #E2E8F0;
+    --color-text-dark: #1A1A1A;
+    --color-text-light: #6C757D;
+    
+    --font-primary: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif; 
+    
+    --radius-sm: 8px;
+    --radius-md: 16px;                 /* Bordes curvos de tarjetas de pines  */
+    --radius-round: 50%;
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-background-app);
+    color: var(--color-text-dark);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button, input {
+    font-family: inherit;
+    border: none;
+    outline: none;
+}
+
+/* ==========================================================================
+   MATERIAL SYMBOLS (Ajustes de alineamiento base)
+   ========================================================================== */
+.material-symbols-outlined {
+    vertical-align: middle;
+    line-height: 1;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+}
+
+/* ==========================================================================
+   CABECERA PRINCIPAL (HEADER)
+   ========================================================================== */
+.main-header {
+    background-color: var(--color-background-card);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 24px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 32px;
+    height: 32px;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+}
+
+.search-area {
+    flex: 1;
+    max-width: 800px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-background-app);
+    border: 1px solid transparent;
+    border-radius: 24px;
+    padding: 8px 16px;
+    gap: 10px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.search-form:focus-within {
+    background-color: var(--color-background-card);
+    border-color: var(--color-primary);
+}
+
+.search-icon {
+    color: var(--color-text-light);
+    font-size: 1.3rem;
+}
+
+.search-form input[type="search"] {
+    background: transparent;
+    width: 100%;
+    color: var(--color-text-dark);
+    font-size: 0.95rem;
+}
+
+.auth-buttons-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-profile-menu {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-avatar-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+    transition: border-color 0.2s;
+}
+
+.profile-avatar-thumb:hover {
+    border-color: var(--color-primary);
+}
+
+/* ==========================================================================
+   BOTONES CORPORATIVOS (REUTILIZABLES EN <a> Y <button>)
+   ========================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-align: center;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-background-card);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--color-border);
+    color: var(--color-text-dark);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-text-light);
+    color: var(--color-background-card);
+}
+
+.btn-danger-sm {
+    background-color: var(--color-danger);
+    color: var(--color-background-card);
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.btn-danger-sm:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.btn-secondary-sm {
+    background-color: var(--color-background-app);
+    color: var(--color-text-dark);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    border-radius: 16px;
+}
+
+.btn-secondary-sm:hover {
+    background-color: var(--color-border);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.badge {
+    background-color: var(--color-border);
+    color: var(--color-text-dark);
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 12px;
+}
+
+/* ==========================================================================
+   PIE DE PÁGINA COMÚN (FOOTER)
+   ========================================================================== */
+.main-footer {
+    background-color: var(--color-background-card);
+    border-top: 1px solid var(--color-border);
+    padding: 24px 16px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-footer p {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+.ethical-disclaimer {
+    margin-top: 6px;
+    font-weight: 600;
+    color: var(--color-primary)!important;
+}
+
+.hidden {
+    display: none!important;
+}

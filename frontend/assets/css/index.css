@@ -1,0 +1,139 @@
+/* ==========================================================================
+   BARRA DE FILTRADO POR CATEGORÍAS (LISTA DE ENLACES SEMÁNTICOS)
+   ========================================================================== */
+.categories-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 24px 12px 24px;
+    background-color: var(--color-background-app);
+    gap: 12px;
+}
+
+.categories-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.categories-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 6px;
+}
+
+.categories-list::-webkit-scrollbar {
+    display: none;
+}
+
+.category-chip {
+    display: inline-block;             /* Comportamiento block para anchors */
+    background-color: var(--color-background-card);
+    color: var(--color-text-dark);
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+    transition: background-color 0.2s, border-color 0.2s;
+    text-align: center;
+}
+
+.category-chip:hover {
+    background-color: var(--color-border);
+}
+
+.category-chip.active {
+    background-color: var(--color-primary);
+    color: var(--color-background-card);
+    border-color: var(--color-primary);
+}
+
+/* ==========================================================================
+   LAYOUT MASONRY RESPONSIVO DE PINES
+   ========================================================================== */
+.main-content {
+    padding: 12px 24px 48px 24px;
+    background-color: var(--color-background-app);
+}
+
+.feed-grid {
+    column-count: 5;
+    column-gap: 16px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pin-card {
+    background-color: var(--color-background-card);
+    margin-bottom: 16px;
+    break-inside: avoid;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--color-border);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+
+.pin-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.pin-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.pin-card-info {
+    padding: 12px;
+}
+
+.pin-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--color-text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pin-card-author {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+.loader-placeholder {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px;
+    font-weight: 600;
+    color: var(--color-text-light);
+}
+
+@media (max-width: 1200px) {
+ .feed-grid { column-count: 4; }
+}
+@media (max-width: 992px) {
+ .feed-grid { column-count: 3; }
+}
+@media (max-width: 768px) {
+ .feed-grid { column-count: 2; }
+}
+@media (max-width: 480px) {
+ .feed-grid { column-count: 1; }
+ .main-header { padding: 10px 12px; }
+ .categories-nav { padding: 16px 12px 8px 12px; }
+}
