@@ -57,18 +57,17 @@ const Perfil = () => {
   // ==========================================
   // NUEVA FUNCIÓN: Traductora de URLs
   // ==========================================
+  // Función blindada para procesar imágenes
   const obtenerUrlImagen = (url) => {
-    // 1. Si no hay URL, mostramos una imagen elegante por defecto
     if (!url)
       return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
 
-    // 2. Si ya es un enlace completo (de S3), lo usamos tal cual
     if (url.startsWith("http")) return url;
 
-    // 3. Si es una ruta local, le pegamos la IP de tu servidor y la ruta estática
-    const baseUrl = apiUrl.replace("/api/v1", "");
-    const rutaLimpia = url.startsWith("/") ? url.substring(1) : url;
+    // TRUCO MAESTRO: Usar el dominio/IP exacto en el que el usuario está navegando
+    const baseUrl = window.location.origin;
 
+    const rutaLimpia = url.startsWith("/") ? url.substring(1) : url;
     return rutaLimpia.startsWith("static/")
       ? `${baseUrl}/${rutaLimpia}`
       : `${baseUrl}/static/${rutaLimpia}`;
