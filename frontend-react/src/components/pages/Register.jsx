@@ -140,7 +140,7 @@ const Register = () => {
     e.preventDefault();
     setApiError("");
 
-    // Ejecutar validación antes de contactar al servidor
+    // 1. Ejecutar validación del frontend antes de contactar al servidor
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -153,9 +153,27 @@ const Register = () => {
       });
 
       const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.detail || "Error al crear la cuenta");
 
+      // 2. Traductor inteligente de errores del Backend
+      if (!response.ok) {
+        let mensajeError = "Error al crear la cuenta. Inténtalo de nuevo.";
+
+        if (data.detail) {
+          if (Array.isArray(data.detail)) {
+            // Si FastAPI manda un arreglo de errores de validación (422)
+            // Tomamos el mensaje específico del primer error, o un mensaje genérico.
+            mensajeError =
+              data.detail[0]?.msg ||
+              "Los datos enviados no tienen el formato correcto.";
+          } else if (typeof data.detail === "string") {
+            // Si FastAPI manda un texto directo (Ej. "El usuario ya existe")
+            mensajeError = data.detail;
+          }
+        }
+        throw new Error(mensajeError);
+      }
+
+      // Si todo sale bien, pasamos a la verificación
       setPaso("codigo");
     } catch (err) {
       console.error("Error en registro manual:", err);
@@ -164,7 +182,6 @@ const Register = () => {
       setIsLoading(false);
     }
   };
-
   // Función auxiliar para limpiar errores al escribir
   const handleChange = (setter, field) => (e) => {
     setter(e.target.value);
