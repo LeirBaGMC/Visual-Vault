@@ -110,29 +110,33 @@ const Register = () => {
     fetchRandomPin();
   }, []);
 
-  // Motor de Validación de Datos
+  // Motor de Validación de Datos (Blindado contra nulos)
   const validateForm = () => {
     const newErrors = {};
 
-    if (username.trim().length < 3) {
+    const user = username || "";
+    const mail = email || "";
+    const pass = password || "";
+    const bdate = birthdate || "";
+
+    if (user.trim().length < 3) {
       newErrors.username = "El usuario debe tener al menos 3 caracteres.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(mail)) {
       newErrors.email = "Ingresa un correo electrónico válido.";
     }
 
-    if (password.length < 8) {
+    if (pass.length < 8) {
       newErrors.password = "La contraseña debe tener mínimo 8 caracteres.";
     }
 
-    if (!birthdate) {
+    if (!bdate) {
       newErrors.birthdate = "La fecha de nacimiento es obligatoria.";
     }
 
     setErrors(newErrors);
-    // Retorna true si no hay errores
     return Object.keys(newErrors).length === 0;
   };
 
@@ -140,8 +144,13 @@ const Register = () => {
     e.preventDefault();
     setApiError("");
 
-    // 1. Ejecutar validación del frontend antes de contactar al servidor
-    if (!validateForm()) return;
+    // 1. Ejecutar validación del frontend ANTES de contactar al servidor
+    if (!validateForm()) {
+      setApiError(
+        "Por favor, completa correctamente los campos marcados en rojo.",
+      );
+      return;
+    }
 
     setIsLoading(true);
 
@@ -154,20 +163,24 @@ const Register = () => {
 
       const data = await response.json();
 
-      // 2. Traductor inteligente de errores del Backend
+      // 2. Traductor EXTREMO de errores del Backend (Anti [object Object])
       if (!response.ok) {
         let mensajeError = "Error al crear la cuenta. Inténtalo de nuevo.";
 
-        if (data.detail) {
+        if (data && data.detail) {
           if (Array.isArray(data.detail)) {
-            // Si FastAPI manda un arreglo de errores de validación (422)
-            // Tomamos el mensaje específico del primer error, o un mensaje genérico.
-            mensajeError =
-              data.detail[0]?.msg ||
-              "Los datos enviados no tienen el formato correcto.";
+            // Si la API manda un arreglo de errores de validación (422)
+            // Extraemos los mensajes reales y los unimos limpiamente
+            const mensajes = data.detail.map(
+              (err) => err.msg || "Dato inválido",
+            );
+            mensajeError = mensajes.join(" | ");
           } else if (typeof data.detail === "string") {
-            // Si FastAPI manda un texto directo (Ej. "El usuario ya existe")
+            // Si la API manda un texto directo
             mensajeError = data.detail;
+          } else {
+            // Si por alguna razón es un objeto raro, lo convertimos a texto legible
+            mensajeError = JSON.stringify(data.detail);
           }
         }
         throw new Error(mensajeError);
@@ -177,11 +190,19 @@ const Register = () => {
       setPaso("codigo");
     } catch (err) {
       console.error("Error en registro manual:", err);
-      setApiError(err.message);
+
+      // 3. Seguro final absoluto contra el bug de Javascript
+      let textoFinal = err.message || "Error de conexión con el servidor.";
+      if (textoFinal.includes("[object Object]")) {
+        textoFinal = "Error de formato en los datos enviados al servidor.";
+      }
+
+      setApiError(textoFinal);
     } finally {
       setIsLoading(false);
     }
   };
+
   // Función auxiliar para limpiar errores al escribir
   const handleChange = (setter, field) => (e) => {
     setter(e.target.value);
@@ -194,12 +215,12 @@ const Register = () => {
     <div className="min-h-screen w-full flex bg-[#FAF7F4] font-sans selection:bg-slate-900 selection:text-white">
       {/* PANEL VISUAL (Lado Izquierdo) */}
       <div className="hidden lg:block lg:w-1/2 p-4">
-        <div className="w-full  h-full rounded-[2.5rem] overflow-hidden relative shadow-2xl bg-slate-800">
+        <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative shadow-2xl bg-slate-800">
           {bgImage ? (
             <img
               src={bgImage}
               alt="Code Vault"
-              className="w-full !rounded-full h-full object-cover animate-in fade-in duration-1000"
+              className="w-full h-full object-cover animate-in fade-in duration-1000"
             />
           ) : (
             <div className="w-full h-full animate-pulse bg-slate-700"></div>
