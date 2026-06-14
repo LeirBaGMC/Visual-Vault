@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Carousel3D from "../organisms/Carousel3D";
+import { onImgError } from "../../utils/imgFallback";
 
 // Sección de pines: mismo carrusel 3D. La rueda/arrastre avanza un pin a la vez
 // para visualizarlos. Click en el pin central → abre su detalle.
@@ -67,6 +68,7 @@ const Visualizador = () => {
                   src={pin.image_url}
                   alt={pin.title}
                   draggable={false}
+                  onError={onImgError}
                   className="w-full h-full object-cover"
                 />
               </div>

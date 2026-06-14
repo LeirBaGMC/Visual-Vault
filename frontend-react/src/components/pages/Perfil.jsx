@@ -235,6 +235,10 @@ const Perfil = () => {
     }
   };
 
+  const inicialesPerfil = (perfilUser?.name || perfilUser?.username || "VV")
+    .slice(0, 2)
+    .toUpperCase();
+
   const categoriasUnicas = [
     "Todas",
     "Para Ti",
@@ -353,7 +357,7 @@ const Perfil = () => {
               }}
               className="bg-zinc-800 hover:bg-zinc-700 text-white w-11 h-11 rounded-full flex items-center justify-center font-bold font-display shadow-lg border border-zinc-700 hover:border-zinc-500 transition-all active:scale-95"
             >
-              MC
+              {inicialesPerfil}
             </button>
 
             {isMainMenuOpen && (
@@ -364,7 +368,7 @@ const Perfil = () => {
                   </p>
                   <div className="flex items-center gap-3 bg-zinc-800/50 p-2 rounded-xl">
                     <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center font-bold text-gray-300">
-                      MC
+                      {inicialesPerfil}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">
@@ -491,7 +495,7 @@ const Perfil = () => {
             }}
             className="bg-zinc-700 text-white w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold font-display border border-zinc-600 hover:border-zinc-400 transition-all active:scale-95"
           >
-            MC
+            {inicialesPerfil}
           </button>
           {isPillMenuOpen && (
             <div className="absolute top-[130%] right-0 w-72 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.9)] overflow-hidden z-[100] animate-fade-in-up">
@@ -501,7 +505,7 @@ const Perfil = () => {
                 </p>
                 <div className="flex items-center gap-3 bg-zinc-800/50 p-2 rounded-xl">
                   <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center font-bold">
-                    MC
+                    {inicialesPerfil}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">

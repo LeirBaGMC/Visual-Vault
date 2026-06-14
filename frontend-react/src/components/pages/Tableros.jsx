@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Carousel3D from "../organisms/Carousel3D";
+import { onImgError } from "../../utils/imgFallback";
 
 const Tableros = () => {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ const Tableros = () => {
                     src={board.covers[0]}
                     alt={board.name}
                     draggable={false}
+                    onError={onImgError}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -155,13 +157,13 @@ const BoardCard = ({ board, index, onClick }) => {
         <div className="grid grid-cols-3 grid-rows-2 gap-1 h-44 sm:h-52">
           <div className="col-span-2 row-span-2 overflow-hidden bg-zinc-800">
             {big && (
-              <img src={big} alt={board.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img src={big} alt={board.name} loading="lazy" onError={onImgError} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             )}
           </div>
           {[0, 1].map((slot) => (
             <div key={slot} className="overflow-hidden bg-zinc-800">
               {small[slot] && (
-                <img src={small[slot]} alt={board.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img src={small[slot]} alt={board.name} loading="lazy" onError={onImgError} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               )}
             </div>
           ))}

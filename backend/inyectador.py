@@ -56,6 +56,11 @@ def inyectar_desde_s3():
                 if len(partes) < 3:
                     continue  # archivo suelto fuera de subcarpeta
 
+                # Saltar carpetas basura / duplicados pesados (wallpapers de ~4 MB):
+                # "1920X1080" es un duplicado de "Wallpapers" que dispara el peso de la página.
+                if partes[1] in ("1920X1080", "1920x1080"):
+                    continue
+
                 categoria = partes[1].replace("_", " ").title()
                 url_imagen = f"{URL_BASE_S3}/{key}"
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SaveToBoardButton from "../molecules/SaveToBoardButton";
+import { onImgError } from "../../utils/imgFallback";
 
 const PinPage = () => {
   const { id } = useParams();
@@ -228,6 +229,7 @@ const PinPage = () => {
             <img
               src={pin.image_url}
               alt={pin.title}
+              onError={onImgError}
               className="w-full h-auto object-cover max-h-[75vh]"
             />
           </div>
@@ -343,6 +345,7 @@ const PinPage = () => {
               <img
                 src={relatedPin.image_url}
                 alt={relatedPin.title}
+                onError={onImgError}
                 className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
               />
