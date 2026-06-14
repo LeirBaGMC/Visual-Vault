@@ -54,6 +54,26 @@ const Perfil = () => {
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
+  // ==========================================
+  // NUEVA FUNCIÓN: Traductora de URLs
+  // ==========================================
+  const obtenerUrlImagen = (url) => {
+    // 1. Si no hay URL, mostramos una imagen elegante por defecto
+    if (!url)
+      return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
+
+    // 2. Si ya es un enlace completo (de S3), lo usamos tal cual
+    if (url.startsWith("http")) return url;
+
+    // 3. Si es una ruta local, le pegamos la IP de tu servidor y la ruta estática
+    const baseUrl = apiUrl.replace("/api/v1", "");
+    const rutaLimpia = url.startsWith("/") ? url.substring(1) : url;
+
+    return rutaLimpia.startsWith("static/")
+      ? `${baseUrl}/${rutaLimpia}`
+      : `${baseUrl}/static/${rutaLimpia}`;
+  };
+
   const cargarPines = async () => {
     try {
       const response = await fetch(`${apiUrl}/pins/`);
@@ -383,7 +403,6 @@ const Perfil = () => {
                   </div>
                 </div>
                 <div className="p-2">
-                  {/* REDIRECCIÓN REDISEÑADA EN MENÚ PRINCIPAL */}
                   <button
                     onClick={() => navigate("/tableros")}
                     className="w-full text-left px-4 py-3 text-sm text-zinc-300 hover:bg-zinc-800 rounded-lg font-medium transition-colors flex items-center justify-between group"
@@ -533,14 +552,13 @@ const Perfil = () => {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">
-                      Gabriel Minda
+                      {perfilUser?.name || perfilUser?.username || "Usuario"}
                     </p>
                     <p className="text-xs text-zinc-400">Personal</p>
                   </div>
                 </div>
               </div>
               <div className="p-2">
-                {/* REDIRECCIÓN EN MENÚ PÍLDORA FLOTANTE */}
                 <button
                   onClick={() => navigate("/tableros")}
                   className="w-full text-left px-4 py-3 text-sm text-zinc-300 hover:bg-zinc-800 rounded-lg font-medium transition-colors flex items-center justify-between group"
@@ -577,9 +595,6 @@ const Perfil = () => {
 
       {/* SECCIÓN MASONRY + SECTOR DE TABS DE PERFIL */}
       <div className="pt-32 md:pt-24">
-        {/* =========================================
-                    NUEVO: SUB-HEADER DE PESTAÑAS (TABS)
-                   ========================================= */}
         <div className="flex justify-center gap-8 border-b border-zinc-800/60 w-full mb-8">
           <button className="pb-4 border-b-2 border-white text-white font-bold text-sm tracking-wider uppercase transition-all">
             Pines
@@ -623,7 +638,9 @@ const Perfil = () => {
                 >
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-all duration-500 delay-0 group-hover:delay-500 group-hover:blur-[12px] group-hover:brightness-40 group-hover/card:!blur-none group-hover/card:!brightness-100 group-hover/card:!delay-0 group-hover/card:scale-[1.03]"
-                    style={{ backgroundImage: `url(${pin.image_url})` }}
+                    style={{
+                      backgroundImage: `url(${obtenerUrlImagen(pin.image_url)})`,
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
 
@@ -631,10 +648,8 @@ const Perfil = () => {
                     className="absolute top-4 right-4 z-20 flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Guardar en tablero (desplegable real) */}
                     <SaveToBoardButton pin={pin} size="sm" />
 
-                    {/* Botón de Me Gusta (Diseño Cristal Premium) */}
                     <button
                       onClick={(e) => toggleLike(e, pin)}
                       className="group/btn bg-black/40 backdrop-blur-xl border border-white/10 hover:bg-zinc-800/90 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] rounded-full p-2.5 flex items-center justify-center transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 active:scale-95"
