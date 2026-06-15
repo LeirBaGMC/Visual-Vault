@@ -77,7 +77,10 @@ def subir_imagen_s3(archivo_bytes: bytes, nombre_original: str, content_type: st
         if img.mode in ("RGBA", "P"):
             img = img.convert("RGB")
 
-        # 3. Comprimir a WebP en memoria
+        # 3. Redimensionar si es enorme (máx 1600px en el lado largo) → mucho menos peso
+        img.thumbnail((1600, 1600))
+
+        # 4. Comprimir a WebP en memoria
         buffer_salida = BytesIO()
         img.save(buffer_salida, format="webp", quality=80, optimize=True)
         archivo_optimizado = buffer_salida.getvalue()

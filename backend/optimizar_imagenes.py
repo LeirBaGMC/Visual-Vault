@@ -37,18 +37,27 @@ def optimizar():
     convertidos, saltados, fallos = 0, 0, 0
 
     for pin_id, url in filas:
-        # Ya optimizado o URL externa → saltar
-        if not url or url.lower().endswith(".webp") or BASE_URL not in url:
+        # Solo procesamos imágenes de NUESTRO bucket
+        if not url or BASE_URL not in url:
             saltados += 1
             continue
 
         key = url.split(BASE_URL, 1)[1]  # ej: "Pics/Arquitectura/abc.jpg"
         try:
             data = s3.get_object(Bucket=BUCKET, Key=key)["Body"].read()
-
             img = Image.open(io.BytesIO(data))
+            ancho, alto = img.size
+            ya_es_webp = key.lower().endswith(".webp")
+
+            # Si ya es WebP pequeño y de resolución razonable, no hay nada que mejorar
+            if ya_es_webp and max(ancho, alto) <= 1600 and len(data) < 300 * 1024:
+                saltados += 1
+                continue
+
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
+            img.thumbnail((1600, 1600))  # baja la resolución de los gigantes (wallpapers)
+
             buf = io.BytesIO()
             img.save(buf, format="webp", quality=80, optimize=True)
 
@@ -61,14 +70,14 @@ def optimizar():
                 CacheControl="max-age=31536000, public",
             )
 
-            nueva_url = BASE_URL + nueva_key
-            con.execute("UPDATE pin SET image_url=? WHERE id=?", (nueva_url, pin_id))
-            con.commit()
-
+            # Si cambió la extensión (jpg→webp), actualiza la BDD y borra el viejo
             if nueva_key != key:
+                nueva_url = BASE_URL + nueva_key
+                con.execute("UPDATE pin SET image_url=? WHERE id=?", (nueva_url, pin_id))
+                con.commit()
                 s3.delete_object(Bucket=BUCKET, Key=key)
 
-            print(f"✅ pin {pin_id}: {len(data)//1024}KB → {buf.tell()//1024}KB  ({nueva_key})")
+            print(f"✅ pin {pin_id}: {len(data)//1024}KB → {buf.tell()//1024}KB ({ancho}x{alto})")
             convertidos += 1
         except Exception as e:
             print(f"❌ pin {pin_id} ({key}): {e}")
