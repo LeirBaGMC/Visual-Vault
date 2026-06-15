@@ -1,6 +1,8 @@
 import os
 import uuid
 import boto3
+from io import BytesIO
+from PIL import Image
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
@@ -65,21 +67,36 @@ def analizar_imagen_nsfw(imagen_bytes: bytes) -> tuple[bool, list]:
 
 
 def subir_imagen_s3(archivo_bytes: bytes, nombre_original: str, content_type: str) -> str:
-    extension = nombre_original.split('.')[-1]
-    nombre_unico = f"{uuid.uuid4()}.{extension}"
-    ruta_s3 = f"uploads/usuarios/{nombre_unico}"
-    
+    """Comprime la imagen a WebP (peso ~80% menor) y la sube a S3 con cabeceras
+    de caché (exigidas por Lighthouse)."""
     try:
+        # 1. Abrir la imagen en memoria (sin tocar el disco)
+        img = Image.open(BytesIO(archivo_bytes))
+
+        # 2. Formato de color compatible con WebP
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+
+        # 3. Comprimir a WebP en memoria
+        buffer_salida = BytesIO()
+        img.save(buffer_salida, format="webp", quality=80, optimize=True)
+        archivo_optimizado = buffer_salida.getvalue()
+
+        # 4. Subir a S3 con caché de 1 año
+        nombre_unico = f"{uuid.uuid4()}.webp"
+        ruta_s3 = f"uploads/usuarios/{nombre_unico}"
         s3_client.put_object(
             Bucket=S3_BUCKET_NAME,
             Key=ruta_s3,
-            Body=archivo_bytes,
-            ContentType=content_type
+            Body=archivo_optimizado,
+            ContentType="image/webp",
+            CacheControl="max-age=31536000, public",
         )
         url_publica = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{ruta_s3}"
+        print(f"☁️ [S3] Subida WebP optimizada: {ruta_s3}")
         return url_publica
-    except ClientError as e:
-        print(f"Error de AWS al subir la imagen: {e}")
+    except Exception as e:
+        print(f"❌ Error al optimizar/subir la imagen: {e}")
         return None
 
 
